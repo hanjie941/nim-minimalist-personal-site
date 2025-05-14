@@ -19,3 +19,33 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.projects-container {
+  scroll-behavior: smooth;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-1000%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 100s linear infinite;
+}
+
+.projects-container:hover {
+  animation-play-state: paused;
+}

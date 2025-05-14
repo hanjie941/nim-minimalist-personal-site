@@ -132,19 +132,25 @@ function MorphingDialogTrigger({
   )
 }
 
-export type MorphingDialogContentProps = {
+interface MorphingDialogContentProps {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  onPrevious?: () => void
+  onNext?: () => void
+  showNavigation?: boolean
 }
 
 function MorphingDialogContent({
   children,
   className,
   style,
+  onPrevious,
+  onNext,
+  showNavigation = false,
 }: MorphingDialogContentProps) {
   const { setIsOpen, isOpen, uniqueId, triggerRef } = useMorphingDialog()
-  const containerRef = useRef<HTMLDivElement>(null!)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [firstFocusableElement, setFirstFocusableElement] =
     useState<HTMLElement | null>(null)
   const [lastFocusableElement, setLastFocusableElement] =
@@ -152,10 +158,17 @@ function MorphingDialogContent({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+      
       if (event.key === 'Escape') {
         setIsOpen(false)
-      }
-      if (event.key === 'Tab') {
+      } else if (event.key === 'ArrowLeft' && onPrevious && showNavigation) {
+        event.preventDefault();
+        onPrevious();
+      } else if (event.key === 'ArrowRight' && onNext && showNavigation) {
+        event.preventDefault();
+        onNext();
+      } else if (event.key === 'Tab') {
         if (!firstFocusableElement || !lastFocusableElement) return
 
         if (event.shiftKey) {
@@ -177,12 +190,12 @@ function MorphingDialogContent({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [setIsOpen, firstFocusableElement, lastFocusableElement])
+  }, [setIsOpen, firstFocusableElement, lastFocusableElement, isOpen, onPrevious, onNext, showNavigation])
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && containerRef.current) {
       document.body.classList.add('overflow-hidden')
-      const focusableElements = containerRef.current?.querySelectorAll(
+      const focusableElements = containerRef.current.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       )
       if (focusableElements && focusableElements.length > 0) {
@@ -198,7 +211,7 @@ function MorphingDialogContent({
     }
   }, [isOpen, triggerRef])
 
-  useClickOutside(containerRef, () => {
+  useClickOutside(containerRef as React.RefObject<HTMLElement>, () => {
     if (isOpen) {
       setIsOpen(false)
     }

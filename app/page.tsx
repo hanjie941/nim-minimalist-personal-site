@@ -18,7 +18,11 @@ import {
   BLOG_POSTS,
   EMAIL,
   SOCIAL_LINKS,
+  ERP_PRODUCTS,
+  DESIGN_AUTOMATION,
 } from './data'
+import { useState } from 'react'
+import { ProductDialog } from '@/components/ui/product-dialog'
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },
@@ -37,56 +41,6 @@ const VARIANTS_SECTION = {
 
 const TRANSITION_SECTION = {
   duration: 0.3,
-}
-
-type ProjectVideoProps = {
-  src: string
-}
-
-function ProjectVideo({ src }: ProjectVideoProps) {
-  return (
-    <MorphingDialog
-      transition={{
-        type: 'spring',
-        bounce: 0,
-        duration: 0.3,
-      }}
-    >
-      <MorphingDialogTrigger>
-        <video
-          src={src}
-          autoPlay
-          loop
-          muted
-          className="aspect-video w-full cursor-zoom-in rounded-xl"
-        />
-      </MorphingDialogTrigger>
-      <MorphingDialogContainer>
-        <MorphingDialogContent className="relative aspect-video rounded-2xl bg-zinc-50 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950 dark:ring-zinc-800/50">
-          <video
-            src={src}
-            autoPlay
-            loop
-            muted
-            className="aspect-video h-[50vh] w-full rounded-xl md:h-[70vh]"
-          />
-        </MorphingDialogContent>
-        <MorphingDialogClose
-          className="fixed top-6 right-6 h-fit w-fit rounded-full bg-white p-1"
-          variants={{
-            initial: { opacity: 0 },
-            animate: {
-              opacity: 1,
-              transition: { delay: 0.3, duration: 0.1 },
-            },
-            exit: { opacity: 0, transition: { duration: 0 } },
-          }}
-        >
-          <XIcon className="h-5 w-5 text-zinc-500" />
-        </MorphingDialogClose>
-      </MorphingDialogContainer>
-    </MorphingDialog>
-  )
 }
 
 function MagneticSocialLink({
@@ -123,7 +77,102 @@ function MagneticSocialLink({
   )
 }
 
+interface WorkExperienceDetail {
+  title: string;
+  description: string[];
+}
+
+interface WorkExperience {
+  company: string;
+  start: string;
+  end: string;
+  location: string;
+  id: string;
+  details: WorkExperienceDetail[];
+}
+
+function WorkExperienceItem({ job, isExpanded, onExpand }: { job: WorkExperience, isExpanded: boolean, onExpand: () => void }) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30 cursor-pointer"
+      onClick={onExpand}
+    >
+      <Spotlight
+        className="from-zinc-900 via-zinc-800 to-zinc-700 blur-2xl dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-50"
+        size={64}
+      />
+      <div className="relative h-full w-full rounded-[15px] bg-white p-4 dark:bg-zinc-950">
+        <div className="relative flex w-full flex-row justify-between">
+          <div>
+            <h4 className="font-normal dark:text-zinc-100">
+              {job.company}
+            </h4>
+            <p className="text-zinc-500 dark:text-zinc-400">
+              {job.start} - {job.end}
+            </p>
+          </div>
+          <p className="text-zinc-500 dark:text-zinc-400">
+            {job.location}
+          </p>
+        </div>
+        {isExpanded && (
+          <div className="mt-4">
+            {job.details.map((detail: WorkExperienceDetail, index: number) => (
+              <div key={index} className="mb-2">
+                <h5 className="font-normal dark:text-zinc-100">
+                  {detail.title}
+                </h5>
+                <ul className="list-disc pl-5 text-zinc-500 dark:text-zinc-400">
+                  {detail.description.map((point: string, idx: number) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Personal() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  
+  // Create separate state for each product category
+  const [aiProductIndex, setAiProductIndex] = useState(0);
+  const [erpProductIndex, setErpProductIndex] = useState(0);
+  const [designProductIndex, setDesignProductIndex] = useState(0);
+
+  const handleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  // Navigation handlers for each product category
+  const navigateAiProducts = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setAiProductIndex((prev) => (prev - 1 + PROJECTS.length) % PROJECTS.length);
+    } else {
+      setAiProductIndex((prev) => (prev + 1) % PROJECTS.length);
+    }
+  };
+
+  const navigateErpProducts = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setErpProductIndex((prev) => (prev - 1 + ERP_PRODUCTS.length) % ERP_PRODUCTS.length);
+    } else {
+      setErpProductIndex((prev) => (prev + 1) % ERP_PRODUCTS.length);
+    }
+  };
+
+  const navigateDesignProducts = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setDesignProductIndex((prev) => (prev - 1 + DESIGN_AUTOMATION.length) % DESIGN_AUTOMATION.length);
+    } else {
+      setDesignProductIndex((prev) => (prev + 1) % DESIGN_AUTOMATION.length);
+    }
+  };
+
   return (
     <motion.main
       className="space-y-24"
@@ -134,12 +183,80 @@ export default function Personal() {
       <motion.section
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
+        className="mb-8"
       >
-        <div className="flex-1">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Focused on creating intuitive and performant web experiences.
-            Bridging the gap between design and development.
-          </p>
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+        className="-mt-6"
+      >
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">AI Products</h3>
+        <div className="overflow-hidden">
+          <div className="projects-container flex animate-scroll gap-6">
+            {PROJECTS.map((project, index) => (
+              <div
+                key={`${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index}
+                    totalProducts={PROJECTS.length}
+                    onPrevious={() => navigateAiProducts('prev')}
+                    onNext={() => navigateAiProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* Duplicate projects for scrolling animation */}
+            {PROJECTS.concat(PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS).map((project, index) => (
+              <div
+                key={`dup-${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index % PROJECTS.length}
+                    totalProducts={PROJECTS.length}
+                    onPrevious={() => navigateAiProducts('prev')}
+                    onNext={() => navigateAiProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </motion.section>
 
@@ -147,28 +264,131 @@ export default function Personal() {
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-5 text-lg font-medium">Selected Projects</h3>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {PROJECTS.map((project) => (
-            <div key={project.name} className="space-y-2">
-              <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                <ProjectVideo src={project.video} />
+        <h3 className="mb-5 text-lg font-medium">ERP Products</h3>
+        <div className="overflow-hidden">
+          <div className="projects-container flex animate-scroll gap-6">
+            {ERP_PRODUCTS.map((project, index) => (
+              <div
+                key={`${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index}
+                    totalProducts={ERP_PRODUCTS.length}
+                    onPrevious={() => navigateErpProducts('prev')}
+                    onNext={() => navigateErpProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
               </div>
-              <div className="px-1">
-                <a
-                  className="font-base group relative inline-block font-[450] text-zinc-900 dark:text-zinc-50"
-                  href={project.link}
-                  target="_blank"
-                >
-                  {project.name}
-                  <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full"></span>
-                </a>
-                <p className="text-base text-zinc-600 dark:text-zinc-400">
-                  {project.description}
-                </p>
+            ))}
+            {/* Duplicate products for scrolling animation */}
+            {ERP_PRODUCTS.concat(ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS).map((project, index) => (
+              <div
+                key={`dup-${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index % ERP_PRODUCTS.length}
+                    totalProducts={ERP_PRODUCTS.length}
+                    onPrevious={() => navigateErpProducts('prev')}
+                    onNext={() => navigateErpProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Design Automation</h3>
+        <div className="overflow-hidden">
+          <div className="projects-container flex animate-scroll gap-6">
+            {DESIGN_AUTOMATION.map((project, index) => (
+              <div
+                key={`${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index}
+                    totalProducts={DESIGN_AUTOMATION.length}
+                    onPrevious={() => navigateDesignProducts('prev')}
+                    onNext={() => navigateDesignProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* Duplicate products for scrolling animation */}
+            {DESIGN_AUTOMATION.concat(DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION).map((project, index) => (
+              <div
+                key={`dup-${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                    productIndex={index % DESIGN_AUTOMATION.length}
+                    totalProducts={DESIGN_AUTOMATION.length}
+                    onPrevious={() => navigateDesignProducts('prev')}
+                    onNext={() => navigateDesignProducts('next')}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </motion.section>
 
@@ -179,79 +399,88 @@ export default function Personal() {
         <h3 className="mb-5 text-lg font-medium">Work Experience</h3>
         <div className="flex flex-col space-y-2">
           {WORK_EXPERIENCE.map((job) => (
-            <a
-              className="relative overflow-hidden rounded-2xl bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30"
-              href={job.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={job.id}
-            >
-              <Spotlight
-                className="from-zinc-900 via-zinc-800 to-zinc-700 blur-2xl dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-50"
-                size={64}
-              />
-              <div className="relative h-full w-full rounded-[15px] bg-white p-4 dark:bg-zinc-950">
-                <div className="relative flex w-full flex-row justify-between">
-                  <div>
-                    <h4 className="font-normal dark:text-zinc-100">
-                      {job.title}
-                    </h4>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      {job.company}
-                    </p>
-                  </div>
-                  <p className="text-zinc-600 dark:text-zinc-400">
-                    {job.start} - {job.end}
-                  </p>
-                </div>
-              </div>
-            </a>
+            <WorkExperienceItem 
+              key={job.id} 
+              job={job} 
+              isExpanded={expandedId === job.id} 
+              onExpand={() => handleExpand(job.id)}
+            />
           ))}
         </div>
       </motion.section>
 
-      <motion.section
+      {/* Comment out Skills section */}
+      {/* <motion.section
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-3 text-lg font-medium">Blog</h3>
-        <div className="flex flex-col space-y-0">
-          <AnimatedBackground
-            enableHover
-            className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
-            transition={{
-              type: 'spring',
-              bounce: 0,
-              duration: 0.2,
-            }}
-          >
-            {BLOG_POSTS.map((post) => (
-              <Link
-                key={post.uid}
-                className="-mx-3 rounded-xl px-3 py-3"
-                href={post.link}
-                data-id={post.uid}
-              >
-                <div className="flex flex-col space-y-1">
-                  <h4 className="font-normal dark:text-zinc-100">
-                    {post.title}
-                  </h4>
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    {post.description}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </AnimatedBackground>
+        <h3 className="mb-5 text-lg font-medium">Skills</h3>
+        <div className="flex flex-col space-y-2">
+          <h4 className="font-semibold">Artificial Intelligence</h4>
+          <ul className="list-disc pl-5">
+            <li>Generative AI</li>
+            <li>OpenAI, LLM</li>
+            <li>Pinecone</li>
+            <li>LangChain</li>
+          </ul>
+          <h4 className="font-semibold">Product Management</h4>
+          <ul className="list-disc pl-5">
+            <li>Data-driven decisions</li>
+            <li>Strategic planning</li>
+            <li>Product research</li>
+            <li>Design thinking</li>
+            <li>Agile methodology</li>
+            <li>Stakeholder relationships</li>
+            <li>People development</li>
+          </ul>
+          <h4 className="font-semibold">Software Development</h4>
+          <ul className="list-disc pl-5">
+            <li>C#, Python, SQL</li>
+            <li>API integration</li>
+            <li>Cloud architecture</li>
+            <li>Git version control</li>
+          </ul>
+          <h4 className="font-semibold">Languages</h4>
+          <ul className="list-disc pl-5">
+            <li>English</li>
+            <li>Chinese</li>
+          </ul>
         </div>
-      </motion.section>
+      </motion.section> */}
+
+      {/* Comment out Awards section */}
+      {/* <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Awards</h3>
+        <ul className="list-disc pl-5">
+          <li>Friends of Our Heartlands Silver Award (2023)</li>
+          <li>MTI Public Service Covid-19 Recognition Award (2020) - Foreign Workers' Dorm Design Project</li>
+          <li>NUS Student Achievement Gold Award (2017) - Smile Village Community Engagement Project</li>
+          <li>ASEAN Undergraduate Scholarship (2014-2018)</li>
+          <li>A*STAR ASEAN Scholarship (2010-2013)</li>
+        </ul>
+      </motion.section> */}
+
+      {/* Comment out Certifications section */}
+      {/* <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Certifications</h3>
+        <ul className="list-disc pl-5">
+          <li><a href="https://cp.certmetrics.com/amazon/en/public/verify/credential/f73ab902a055435696734bc20408f128" target="_blank">AWS CCP</a></li>
+          <li><a href="https://www.credly.com/badges/eb6f3ef8-00c7-4ef3-bb26-6ca48d0e0610" target="_blank">PSPO II</a></li>
+        </ul>
+      </motion.section> */}
 
       <motion.section
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
         <h3 className="mb-5 text-lg font-medium">Connect</h3>
-        <p className="mb-5 text-zinc-600 dark:text-zinc-400">
+        <p className="mb-5 text-zinc-500 dark:text-zinc-400">
           Feel free to contact me at{' '}
           <a className="underline dark:text-zinc-300" href={`mailto:${EMAIL}`}>
             {EMAIL}
