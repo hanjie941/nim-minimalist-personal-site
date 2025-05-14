@@ -13,13 +13,11 @@ import {
 import Link from 'next/link'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import {
-  PROJECTS,
+  PRODUCTS,
   WORK_EXPERIENCE,
   BLOG_POSTS,
   EMAIL,
   SOCIAL_LINKS,
-  ERP_PRODUCTS,
-  DESIGN_AUTOMATION,
 } from './data'
 import { useState } from 'react'
 import { ProductDialog } from '@/components/ui/product-dialog'
@@ -138,39 +136,74 @@ function WorkExperienceItem({ job, isExpanded, onExpand }: { job: WorkExperience
 
 export default function Personal() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  
-  // Create separate state for each product category
-  const [aiProductIndex, setAiProductIndex] = useState(0);
-  const [erpProductIndex, setErpProductIndex] = useState(0);
-  const [designProductIndex, setDesignProductIndex] = useState(0);
 
   const handleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // Navigation handlers for each product category
-  const navigateAiProducts = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setAiProductIndex((prev) => (prev - 1 + PROJECTS.length) % PROJECTS.length);
-    } else {
-      setAiProductIndex((prev) => (prev + 1) % PROJECTS.length);
-    }
-  };
-
-  const navigateErpProducts = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setErpProductIndex((prev) => (prev - 1 + ERP_PRODUCTS.length) % ERP_PRODUCTS.length);
-    } else {
-      setErpProductIndex((prev) => (prev + 1) % ERP_PRODUCTS.length);
-    }
-  };
-
-  const navigateDesignProducts = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setDesignProductIndex((prev) => (prev - 1 + DESIGN_AUTOMATION.length) % DESIGN_AUTOMATION.length);
-    } else {
-      setDesignProductIndex((prev) => (prev + 1) % DESIGN_AUTOMATION.length);
-    }
+  // Helper function to render product section
+  const renderProductSection = (category: 'ai' | 'erp' | 'design', title: string) => {
+    const categoryProducts = PRODUCTS.filter(p => p.category === category);
+    
+    return (
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">{title}</h3>
+        <div className="overflow-hidden">
+          <div className="projects-container flex animate-scroll gap-6">
+            {categoryProducts.map((project, index) => (
+              <div
+                key={`${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {/* Duplicate products for scrolling animation */}
+            {Array(10).fill(categoryProducts).flat().map((project, index) => (
+              <div
+                key={`dup-${project.name}-${index}`}
+                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
+              >
+                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                  <ProductDialog 
+                    src={project.image}
+                    alt={project.name}
+                    title={project.name}
+                    description={project.description}
+                  />
+                </div>
+                <div className="px-1">
+                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
+                    {project.name}
+                  </span>
+                  <p className="text-base text-zinc-500 dark:text-zinc-400">
+                    {project.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+    );
   };
 
   return (
@@ -180,217 +213,9 @@ export default function Personal() {
       initial="hidden"
       animate="visible"
     >
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-        className="mb-8"
-      >
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-        className="-mt-6"
-      >
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">AI Products</h3>
-        <div className="overflow-hidden">
-          <div className="projects-container flex animate-scroll gap-6">
-            {PROJECTS.map((project, index) => (
-              <div
-                key={`${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index}
-                    totalProducts={PROJECTS.length}
-                    onPrevious={() => navigateAiProducts('prev')}
-                    onNext={() => navigateAiProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {/* Duplicate projects for scrolling animation */}
-            {PROJECTS.concat(PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS, PROJECTS).map((project, index) => (
-              <div
-                key={`dup-${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index % PROJECTS.length}
-                    totalProducts={PROJECTS.length}
-                    onPrevious={() => navigateAiProducts('prev')}
-                    onNext={() => navigateAiProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">ERP Products</h3>
-        <div className="overflow-hidden">
-          <div className="projects-container flex animate-scroll gap-6">
-            {ERP_PRODUCTS.map((project, index) => (
-              <div
-                key={`${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index}
-                    totalProducts={ERP_PRODUCTS.length}
-                    onPrevious={() => navigateErpProducts('prev')}
-                    onNext={() => navigateErpProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {/* Duplicate products for scrolling animation */}
-            {ERP_PRODUCTS.concat(ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS, ERP_PRODUCTS).map((project, index) => (
-              <div
-                key={`dup-${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index % ERP_PRODUCTS.length}
-                    totalProducts={ERP_PRODUCTS.length}
-                    onPrevious={() => navigateErpProducts('prev')}
-                    onNext={() => navigateErpProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <h3 className="mb-5 text-lg font-medium">Design Automation</h3>
-        <div className="overflow-hidden">
-          <div className="projects-container flex animate-scroll gap-6">
-            {DESIGN_AUTOMATION.map((project, index) => (
-              <div
-                key={`${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index}
-                    totalProducts={DESIGN_AUTOMATION.length}
-                    onPrevious={() => navigateDesignProducts('prev')}
-                    onNext={() => navigateDesignProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {/* Duplicate products for scrolling animation */}
-            {DESIGN_AUTOMATION.concat(DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION, DESIGN_AUTOMATION).map((project, index) => (
-              <div
-                key={`dup-${project.name}-${index}`}
-                className="w-[calc(100%-2rem)] shrink-0 snap-center space-y-2 sm:w-[calc(50%-1.5rem)]"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProductDialog 
-                    src={project.image}
-                    alt={project.name}
-                    title={project.name}
-                    description={project.description}
-                    productIndex={index % DESIGN_AUTOMATION.length}
-                    totalProducts={DESIGN_AUTOMATION.length}
-                    onPrevious={() => navigateDesignProducts('prev')}
-                    onNext={() => navigateDesignProducts('next')}
-                  />
-                </div>
-                <div className="px-1">
-                  <span className="font-base relative inline-block text-zinc-900 dark:text-zinc-50">
-                    {project.name}
-                  </span>
-                  <p className="text-base text-zinc-500 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
+      {renderProductSection('ai', 'AI Products')}
+      {renderProductSection('erp', 'ERP Products')}
+      {renderProductSection('design', 'Design Automation')}
 
       <motion.section
         variants={VARIANTS_SECTION}

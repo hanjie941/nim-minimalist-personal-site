@@ -136,18 +136,12 @@ interface MorphingDialogContentProps {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
-  onPrevious?: () => void
-  onNext?: () => void
-  showNavigation?: boolean
 }
 
 function MorphingDialogContent({
   children,
   className,
   style,
-  onPrevious,
-  onNext,
-  showNavigation = false,
 }: MorphingDialogContentProps) {
   const { setIsOpen, isOpen, uniqueId, triggerRef } = useMorphingDialog()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -162,12 +156,6 @@ function MorphingDialogContent({
       
       if (event.key === 'Escape') {
         setIsOpen(false)
-      } else if (event.key === 'ArrowLeft' && onPrevious && showNavigation) {
-        event.preventDefault();
-        onPrevious();
-      } else if (event.key === 'ArrowRight' && onNext && showNavigation) {
-        event.preventDefault();
-        onNext();
       } else if (event.key === 'Tab') {
         if (!firstFocusableElement || !lastFocusableElement) return
 
@@ -190,7 +178,7 @@ function MorphingDialogContent({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [setIsOpen, firstFocusableElement, lastFocusableElement, isOpen, onPrevious, onNext, showNavigation])
+  }, [setIsOpen, firstFocusableElement, lastFocusableElement, isOpen])
 
   useEffect(() => {
     if (isOpen && containerRef.current) {
@@ -433,4 +421,5 @@ export {
   MorphingDialogSubtitle,
   MorphingDialogDescription,
   MorphingDialogImage,
+  useMorphingDialog,
 }

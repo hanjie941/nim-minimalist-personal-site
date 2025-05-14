@@ -1,9 +1,10 @@
-type Project = {
+export type Product = {
   name: string
   description: string
   link: string
   image: string
   id: string
+  category: 'ai' | 'erp' | 'design'
 }
 
 type WorkExperience = {
@@ -27,13 +28,16 @@ type SocialLink = {
   link: string
 }
 
-export const PROJECTS: Project[] = [
+// Consolidated products list
+export const PRODUCTS: Product[] = [
+  // AI Products
   {
     name: 'AI Sustainability Chatbot',
     description: 'RAG-LLM fine-tuned to answer sustainable building related queries.',
     link: '#',
     image: '/images/AI_Sustainability_Chatbot.png',
     id: 'project1',
+    category: 'ai'
   },
   {
     name: 'AI Chiller Plant Optimisation',
@@ -41,6 +45,7 @@ export const PROJECTS: Project[] = [
     link: '#',
     image: '/images/AI_Chiller_Plant_Optimisation.png',
     id: 'project2',
+    category: 'ai'
   },
   {
     name: 'AI ETTV Calculator',
@@ -48,7 +53,58 @@ export const PROJECTS: Project[] = [
     link: '#',
     image: '/images/AI_ETTV_Calculator.png',
     id: 'project3',
+    category: 'ai'
   },
+  // ERP Products
+  {
+    name: 'Proj Management & Finance Dashboard',
+    description: 'Streamlines how teams track projects, workflows, and boost productivity.',
+    link: '#',
+    image: '/images/Proj Management & Finance Dashboard.png',
+    id: 'erp1',
+    category: 'erp'
+  },
+  {
+    name: 'Construction Installation Management',
+    description: 'Manages comments & defects in construction to enhance material sales.',
+    link: '#',
+    image: '/images/Construction_Installation_Management.png',
+    id: 'erp2',
+    category: 'erp'
+  },
+  {
+    name: 'Concrete Ordering & Delivery App',
+    description: 'Streamlines processes to enhance customer experience for concrete sales.',
+    link: '#',
+    image: '/images/Concrete_Ordering_&_Delivery_App.jpg',
+    id: 'erp3',
+    category: 'erp'
+  },
+  // Design Automation Products
+  {
+    name: 'Urban Planning & Building Generation',
+    description: 'Custom rule-based Rhino plugin for urban planning and building modelling.',
+    link: '#',
+    image: '/images/Urban Planning & Building Generation.png',
+    id: 'design1',
+    category: 'design'
+  },
+  {
+    name: 'Embodied Carbon Calculator',
+    description: 'Calculate and analyse embodied carbon for building design with BIM model.',
+    link: '#',
+    image: '/images/Embodied Carbon Calculator.png',
+    id: 'design2',
+    category: 'design'
+  },
+  {
+    name: 'Modelling & Drawing for Structures',
+    description: 'Custom rule-based Tekla plugin to improve drafting productivity.',
+    link: '#',
+    image: '/images/Modelling & Drawing for Structures.png',
+    id: 'design3',
+    category: 'design'
+  }
 ]
 
 export const WORK_EXPERIENCE: WorkExperience[] = [
@@ -193,51 +249,3 @@ export const SOCIAL_LINKS: SocialLink[] = [
 ]
 
 export const EMAIL = 'hanije941@gmail.com'
-
-export const ERP_PRODUCTS: Project[] = [
-  {
-    name: 'Proj Management & Finance Dashboard',
-    description: 'Streamlines how teams track projects, workflows, and boost productivity.',
-    link: '#',
-    image: '/images/Proj Management & Finance Dashboard.png',
-    id: 'erp1',
-  },
-  {
-    name: 'Construction Installation Management',
-    description: 'Manages comments & defects in construction to enhance material sales.',
-    link: '#',
-    image: '/images/Construction_Installation_Management.png',
-    id: 'erp2',
-  },
-  {
-    name: 'Concrete Ordering & Delivery App',
-    description: 'Streamlines processes to enhance customer experience for concrete sales.',
-    link: '#',
-    image: '/images/Concrete_Ordering_&_Delivery_App.jpg',
-    id: 'erp3',
-  },
-]
-
-export const DESIGN_AUTOMATION: Project[] = [
-  {
-    name: 'Urban Planning & Building Generation',
-    description: 'Custom rule-based Rhino plugin for urban planning and building modelling.',
-    link: '#',
-    image: '/images/Urban Planning & Building Generation.png',
-    id: 'design1',
-  },
-  {
-    name: 'Embodied Carbon Calculator',
-    description: 'Calculate and analyse embodied carbon for building design with BIM model.',
-    link: '#',
-    image: '/images/Embodied Carbon Calculator.png',
-    id: 'design2',
-  },
-  {
-    name: 'Modelling & Drawing for Structures',
-    description: 'Custom rule-based Tekla plugin to improve drafting productivity.',
-    link: '#',
-    image: '/images/Modelling & Drawing for Structures.png',
-    id: 'design3',
-  },
-]
